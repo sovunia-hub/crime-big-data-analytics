@@ -31,18 +31,6 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
 - Crime location (latitude, longitude)
 - Status of the case
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/crime-analytics.git
-   cd crime-analytics
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Set up databases and data pipeline using the provided SQL and configuration files.
-
 ## Workflow Steps
 1. **Data Collection & Storage**:
    - Extract crime data from LAPD reports.
@@ -80,8 +68,14 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
         Lon varchar(100)
      );
      ```
-
-2. **Data Transfer with Apache Sqoop**:
+     
+2. **Data Transfer to Spool**:
+   - Import data from MariaDB to Spool with [python file](https://github.com/sovunia-hub/crime-big-data-analytics/blob/main/mariadb_to_spool.py):
+     ```bash
+     mariadb_to_spool.py
+     ```
+     
+3. **Data Transfer with Apache Sqoop**:
    - Import data from MariaDB to HDFS:
      ```bash
      sqoop export \
@@ -93,7 +87,7 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
         --fields-terminated-by ';'
      ```
 
-3. **Real-Time Data Streaming with Apache Kafka & Flume**:
+4. **Real-Time Data Streaming with Apache Kafka & Flume**:
    - Start a Kafka topic:
      ```bash
      kafka-topics --create \
@@ -131,26 +125,17 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
      agent1.sources.srcl.channels = ch1 ch2
      ```
 
-4. **Data Analysis & Visualization**:
-   - Process data in Apache Spark:
-     ```python
-     from pyspark.sql import SparkSession
-     spark = SparkSession.builder.appName("CrimeAnalytics").getOrCreate()
-     
-     df = spark.read.csv("hdfs:///crime_data/crime_records.csv", header=True, inferSchema=True)
-     df.show()
+5. **Data Transfer to Hive**:
+   - Import data from MariaDB to Hive:
+     ```bash
+     sqoop import -Dorg.apache.sqoop.splitter.allow_text_splitter=true \
+        --connect jdbc:mysql://localhost:3306/crimes \
+        --username student \
+        --password student \
+        --table crimes_data \
+        --hive-import \
+        --hive-table hive_crimes
      ```
-   - Generate crime distribution plots with Plotly:
-     ```python
-     import plotly.express as px
-     crime_counts = df.groupBy("area_name").count().toPandas()
-     fig = px.bar(crime_counts, x='area_name', y='count', title='Crime Distribution by Area')
-     fig.show()
-     ```
-
-5. **Crime Prediction & Insights**:
-   - Train machine learning models for crime forecasting.
-   - Generate reports on crime trends and law enforcement efficiency.
 
 ## Usage
 - Run the data pipeline to collect and store crime data.
