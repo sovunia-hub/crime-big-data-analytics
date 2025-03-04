@@ -35,7 +35,7 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
 1. **Data Collection & Storage**:
    - Extract crime data from LAPD reports.
    - Store raw data in HDFS for processing.
-   - Load data into MariaDB:
+   - Create table in MariaDB:
      ```sql
      MariaDB [crimes]> create table crime_data (
         DR No varchar(100),
@@ -69,14 +69,8 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
      );
      ```
      
-2. **Data Transfer to Spool**:
-   - Import data from MariaDB to Spool with [python file](https://github.com/sovunia-hub/crime-big-data-analytics/blob/main/mariadb_to_spool.py):
-     ```bash
-     mariadb_to_spool.py
-     ```
-     
-3. **Data Transfer with Apache Sqoop**:
-   - Import data from MariaDB to HDFS:
+2. **Data Transfer with Apache Sqoop**:
+   - Import data from HDFS to MariaDB:
      ```bash
      sqoop export \
         --connect jdbc:mysql://localhost/crimes \
@@ -85,6 +79,12 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
         --export-dir /user/student/lab_data \
         --table crime_data \
         --fields-terminated-by ';'
+     ```
+     
+3. **Data Transfer to Spool**:
+   - Import data from MariaDB to Spool with [python file](https://github.com/sovunia-hub/crime-big-data-analytics/blob/main/mariadb_to_spool.py):
+     ```bash
+     mariadb_to_spool.py
      ```
 
 4. **Real-Time Data Streaming with Apache Kafka & Flume**:
@@ -136,6 +136,9 @@ The dataset consists of crime reports from the Los Angeles Police Department (LA
         --hive-import \
         --hive-table hive_crimes
      ```
+     
+6. **Analytics**:
+   - The analysis and visualizations are presented in the [file](https://github.com/sovunia-hub/crime-big-data-analytics/blob/main/crime_analytics_document.pdf).
 
 ## Usage
 - Run the data pipeline to collect and store crime data.
